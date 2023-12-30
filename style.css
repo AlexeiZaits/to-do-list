@@ -49,6 +49,8 @@ ul {
 
 .todo-item {
     display: flex;
+    flex-direction: row;
+    
     gap: 1rem;
     padding: 0.5rem 0;
 }
@@ -56,6 +58,7 @@ ul {
     color: red;
     cursor: pointer;
     font-weight: bolder;
+    height: 1.2rem;
 }
 .close:hover {
     color:tomato
