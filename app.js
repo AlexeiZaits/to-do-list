@@ -12,7 +12,7 @@ handle_request('https://jsonplaceholder.typicode.com/users', 'GET')
     console.log(`Ошибка при получение данных ${error}`)
 })
 
-
+// отправление запросов на сервер
 async function handle_request(link, request, json=undefined){
 
         return fetch(link, {
@@ -55,7 +55,7 @@ async function get_todos(users){
     handle_request('https://jsonplaceholder.typicode.com/todos', 'GET')
     .then(data => {
         data = JSON.parse(data)
-        construct_todo(data, users)
+        construct_todos(data, users)
     })
     .catch(error => {
         console.log(`Ошибка при получение данных ${error}`)
@@ -63,14 +63,15 @@ async function get_todos(users){
     
 }
 
-function construct_todo(posts, users){
+// констркуктор todos
+function construct_todos(posts, users){
     todo_list = document.getElementById('todo-list')
     todo_list.innerHTML = '';
     for (let post of posts){
         author = users.find(item => item.id === post.userId).name
         todo_list.insertAdjacentHTML('beforeend', `
         <li class="todo-item">
-        <input type="checkbox" onclick="change_status(event)">
+        <input type="checkbox" ${post['completed'] === true ? 'checked' : ''} onclick="change_status(event)">
         <p class="todo" data-id=${post['id']}>${post['title']}<br><strong>${author}</strong></p>
         <p class="close" onclick="delete_todo(event)">&times;</p>
         </li>
@@ -78,6 +79,7 @@ function construct_todo(posts, users){
     }
 }
 
+//изменение статуса
 function change_status(event){
     todoId = event.target.parentElement
     .querySelector('.todo').dataset.id
@@ -85,6 +87,7 @@ function change_status(event){
     
 }
 
+//удаление todo
 function delete_todo(event){
     todo = event.target.parentElement;
     todoId = todo.querySelector('.todo').dataset.id;
@@ -101,12 +104,34 @@ function delete_todo(event){
     
 }
 
+//добавление todo
 function add_todo(event){
     event.preventDefault();
     json = {}
     if(document.getElementById('user-todo').value !== 'select user'){
+        author = document.getElementById('user-todo').value;
+        new_todo = document.getElementById('new-todo').value;
         console.log(document.getElementById('user-todo').dataset.id)
-        handle_request(`https://jsonplaceholder.typicode.com/todos`, 'POST')
+        json['author'] = author
+        json['title'] = new_todo
+        console.log(json)
+        handle_request(`https://jsonplaceholder.typicode.com/todos`, 'POST', json)
+        .then(data => {
+            if (data){
+                data = {id: 200} // имитация работы с базой данных
+                document.getElementById('todo-list').insertAdjacentHTML('afterbegin', `
+                <li class="todo-item">
+                <input type="checkbox" onclick="change_status(event)">
+                <p class="todo" data-id=${data.id}>${new_todo}<br><strong>${author}</strong></p>
+                <p class="close" onclick="delete_todo(event)">&times;</p>
+                </li>
+                `)
+            }
+        })
+        .catch(error =>{
+            console.log(`Ошибка: ${error}`)
+        })
+
     }
     else{
         alert('Выбирите,пожалуйста, пользователя')
