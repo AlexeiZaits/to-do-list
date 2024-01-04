@@ -6,7 +6,8 @@ let authors = [];
 let todos = [];
 
 //Attach Events
-document.addEventListener('DOMContentLoaded', initApp)
+// document.addEventListener('DOMContentLoaded', initApp) не работает на github pages
+initApp()
 add_todo_button = document.getElementById('add_todo')
 .addEventListener('click', add_todo)
 
